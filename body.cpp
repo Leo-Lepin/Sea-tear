@@ -146,12 +146,23 @@ bool win(char** tablepl1ship, char** tablepl2ship) {
 }
 
 bool isShipExist(char** table) {
-	if ((xl > 0 && table[y][xl-1] == 'k') || (xr < 10 && table[y][xr+1] == 'k') ||
-		(yu > 0 && table[yu-1][x] == 'k') || (yd < 10 && table[yd+1][x] == 'k'))
+	if ((xl > 0 && table[y][xl - 1] == 'k') || (xr < 10 && table[y][xr + 1] == 'k') ||
+		(yu > 0 && table[yu - 1][x] == 'k') || (yd < 10 && table[yd + 1][x] == 'k'))
 		return 1;
 	return 0;
 }
 
+// ****
+// *xx*
+// ****
+
+void destroyShip(char** table) {
+	for (int yn = max(yu - 1, 0); yn <= min(yd + 1, 9); yn++) {
+		for (int xn = max(xl - 1, 0); xn <= min(xr + 1, 9); xn++) {
+			table[yn][xn] = (table[yn][xn] == 'x') ? 'x' : 'o';
+		}
+	}
+}
 void aiIfShot(char** tableBot, char** tablePl) {
 	if ((l || r || d || u) == 0) {
 		l = 1; r = 1; u = 1; d = 1;
@@ -190,18 +201,20 @@ void aiIfShot(char** tableBot, char** tablePl) {
 		tablePl[yn][xn] = 'x';
 		tableBot[yn][xn] = 'x';
 		if (!isShipExist(tablePl)) {
+			destroyShip(tableBot);
+			destroyShip(tablePl);
 			shot = 0;
 			l = 0; r = 0; d = 0; u = 0;
 		}
 	}
 	else {
-		if (xn == xl-1)
+		if (xn == xl - 1)
 			l = 0;
-		else if (xn == xr+1)
+		else if (xn == xr + 1)
 			r = 0;
-		else if (yn == yu-1)
+		else if (yn == yu - 1)
 			u = 0;
-		else if (yn == yd+1)
+		else if (yn == yd + 1)
 			d = 0;
 		tablePl[yn][xn] = 'o';
 		tableBot[yn][xn] = 'o';
@@ -253,10 +266,10 @@ int main()
 	//preparing_field();
 	filling(tableplship);
 	filling(tablebotshoot);
-	tableplship[1][1+1] = 'k';
-	tableplship[1][4+1] = 'k';
-	tableplship[1][3+1] = 'k';
-	tableplship[1][2+1] = 'k';
+	tableplship[1][1 + 1] = 'k';
+	tableplship[1][4 + 1] = 'k';
+	tableplship[1][3 + 1] = 'k';
+	tableplship[1][2 + 1] = 'k';
 	do {
 		aiHub();
 	} while (!shot);
