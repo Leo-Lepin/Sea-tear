@@ -27,8 +27,14 @@ void filling(char** table)
 
 void print(char** table)
 {
+    cout << "  ";
+    for (int i = 1; i < 11; i++)
+        cout << i << " ";
+    cout << endl;
+    string s = "abcdefghij";
     for (int i = 0; i < 10; i++)
     {
+        cout << s[i] << " ";
         for (int a = 0; a < 10; a++)
         {
             cout << table[i][a] << ' ';
@@ -103,16 +109,6 @@ void addShip(char** table, int len) {
     else addShip(table, len);
 }
 
-bool isNotDiagonal(char** table) {
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j <= 9; j++) {
-            if (table[i][j] == 'k' && (j < 9 && table[i + 1][j + 1] == 'k' || j > 0 && table[i + 1][j - 1] == 'k'))
-                return 0;
-        }
-    }
-    return 1;
-}
-
 void fillShips(char** table) {
     for (int i = 1; i < 5; i++) {
         for (int j = 0; j < 5 - i; j++) {
@@ -163,6 +159,16 @@ void destroyShip(char** table) {
             table[yn][xn] = (table[yn][xn] == 'x') ? 'x' : 'o';
         }
     }
+}
+
+pair <int, int> enter() {
+    char le; int num;
+    cout << "Введите через пробел номер строки и ячейки:\n";
+    cin >> le >> num;
+    int y, x;
+    x = num - 1;
+    y = le - 97;
+    return { y, x };
 }
 
 void aiIfShot(char** tableBot, char** tablePl) {
@@ -280,8 +286,8 @@ void del() {
 
 int main()
 {
+    setlocale(LC_ALL, "Russian");
     srand(time(NULL));
     preparing_field();
-    
     del();
 }
