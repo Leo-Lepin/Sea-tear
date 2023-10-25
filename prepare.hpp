@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <vector>
-
 using namespace std;
 
 char **tableplship = new char *[10];
@@ -26,15 +25,24 @@ void filling(char** table)
     }
 }
 
-void print(char **table) 
+void print(char** table)
 {
-  for (int i = 0; i < 10; i++) {
-    for (int a = 0; a < 10; a++) {
-      cout << table[i][a] << ' ';
-    }
+    cout << "  ";
+    for (int i = 1; i < 11; i++)
+        cout << i << " ";
     cout << endl;
-  }
-  cout << "\n\n";
+    string s = "abcdefghij";
+    for (int i = 0; i < 10; i++)
+    {
+        cout << s[i] << " ";
+        for (int a = 0; a < 10; a++)
+        {
+            cout << table[i][a] << ' ';
+        }
+        cout << endl;
+
+    }
+    cout << "\n\n";
 }
 
 bool check(char **table, int y, int x) 
