@@ -283,9 +283,29 @@ bool win(char** tablepl1ship, char** tablepl2ship)
 
 pair <int, int> enter()
 {
-    char le; int num;
+    string s;
+    char le; int num = 0;
     cout << "Введите через пробел номер строки и ячейки:\n";
-    cin >> le >> num;
+    cin >> le >> s;
+    for (int i = 0; i < s.size(); i++) {
+        if (s[i] >= 48 && s[i] <= 57) {
+            num = num * 10 + s[i] - 48;
+        }
+        else if (s[i] != ' ') {
+            cout << "Error in input\n";
+            return enter();
+            break;
+        }
+        if (num > 10) {
+            cout << "Number is too big\n";
+            return enter();
+        }
+    }
+    while (le < 97 || le > 107)
+    {
+        cout << "Буква\"" << le <<"\" не доступна, введи букву от a до j" << endl;
+        cin >> le;
+    }
     int y, x;
     x = num - 1;
     y = le - 97;
@@ -369,11 +389,25 @@ void movePl(char** tablePlSi, char** tablePlSo, char** tableOppSi, int num)
 
 }
 
+void beforeMoves() {
+    cout << "Предыдущий игрок, введите любой символ + enter\n";
+    char ch; cin >> ch;
+    system("cls");
+    cout << "Следующий игрок, нажмите любой сивол + enter\n";
+    cin >> ch;
+    system("cls");
+
+}
+
 int main() {
     setlocale(LC_ALL, "Russian");
     srand(time(NULL));
     preparing_field();
-    for (int i = 0; i < 1000000000; i++)
-        movePl(tableplship, tableplshoot, tableplship, 1);
+    for (int i = 0; i < 1000000000; i++) {
+        beforeMoves();
+        pair <int, int> p = enter();
+        int y = p.first, x = p.second;
+        cout << y << " " << x << endl;
+    } 
     del();
 }
