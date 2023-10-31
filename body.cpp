@@ -1,16 +1,46 @@
 #include <iostream>
 #include <vector>
+#include <windows.h>
+
 using namespace std;
+
 bool shot = 0, l = 0, r = 0, u = 0, d = 0;
 int xl, xr, yu, yd;
 int x, y;
+
+enum ConsoleColor
+{
+	Black = 0,
+	Blue = 1,
+	Green = 2,
+	Cyan = 3,
+	Red = 4,
+	Magenta = 5,
+	Brown = 6,
+	LightGray = 7,
+	DarkGray = 8,
+	LightBlue = 9,
+	LightGreen = 10,
+	LightCyan = 11,
+	LightRed = 12,
+	LightMagenta = 13,
+	Yellow = 14,
+	White = 15
+};
+
+void SetColor(ConsoleColor text, ConsoleColor background)
+{
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hStdOut, (WORD)((background << 4) | text));
+}
+
 
 class Line {
 public:
 	char& operator[](int ind) { // обращение по индексу к элементу линии
 		return arr[ind];
 	}
-	void fillLine() {
+	void fillLine() { // заполнение линии
 		for (int a = 0; a < 10; a++)
 		{
 			arr[a] = '.';
@@ -43,7 +73,7 @@ public:
 		do {
 			y = rand() % 10;
 			x = rand() % 10;
-		} while (check( y, x));
+		} while (check(y, x));
 		xl = x;
 		xr = x;
 		yu = y;
@@ -51,7 +81,7 @@ public:
 		vector<pair<int, int>> filled = { {y, x} };
 		while (ship++ < len) {
 			vector<pair<int, int>> possible;
-			if (l && xl - 1 >= 0 && !check( y, xl - 1)) {
+			if (l && xl - 1 >= 0 && !check(y, xl - 1)) {
 				possible.push_back({ y, xl - 1 });// Лево
 			}
 			if (r && xr + 1 < 10 && !check(y, xr + 1)) {
@@ -126,7 +156,21 @@ public:
 			cout << s[i] << " ";
 			for (int a = 0; a < 10; a++)
 			{
+				switch(arr[i][a]){
+				case 'x':
+					SetColor(Red, Black);
+					break;
+				case 'k':
+					SetColor(LightGreen, Black);
+					break;
+				default:
+					SetColor(Blue, Black);
+					break;
+
+				}
 				cout << arr[i][a] << ' ';
+
+				SetColor(White, Black);
 			}
 			cout << endl;
 
@@ -165,12 +209,14 @@ private:
 		}
 		return 0;
 	}
-};\
+}; 
 
 Table tableplship;
 Table tableplshoot(false);
 Table tablebotship;
 Table tablebotshoot(false);
+
+
 
 void aiIfShot(Table tableBot, Table tablePl)// Ход ИИ, если тот попал
 {
@@ -413,5 +459,5 @@ void beforeMoves()// Переход хода
 }
 
 int main() {
-	tablebotshoot.print();
+	tablebotship.print();
 }
