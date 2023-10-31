@@ -2,175 +2,178 @@
 #include <vector>
 using namespace std;
 
-char** tableplship = new char* [10];
-char** tableplshoot = new char* [10];
-char** tablebotship = new char* [10];
-char** tablebotshoot = new char* [10];
+Table tableplship;
+Table tableplshoot(false);
+Table tablebotship;
+Table tablebotshoot(false);
 bool shot = 0, l = 0, r = 0, u = 0, d = 0;
 int xl, xr, yu, yd;
 int x, y;
 
-void filling(char** table)// Заполнение таблицы
-{
-	for (int i = 0; i < 10; i++)
-	{
-		table[i] = new char[10];
-		for (int a = 0; a < 10; a++)
-		{
-			table[i][a] = '.';
-		}
-
+class Line {
+public:
+	char& operator[](int ind) { // обращение по индексу к элементу линии
+		return arr[ind];
 	}
-}
-
-void print(char** table)// Вывод таблицы
-{
-	cout << "  ";
-	for (int i = 1; i < 11; i++)
-		cout << i << " ";
-	cout << endl;
-	string s = "abcdefghij";
-	for (int i = 0; i < 10; i++)
-	{
-		cout << s[i] << " ";
+	void fillLine() {
 		for (int a = 0; a < 10; a++)
 		{
-			cout << table[i][a] << ' ';
+			arr[a] = '.';
 		}
+	}
+
+
+	~Line() {
+		delete[] arr;
+	}
+	Line() {
+		fillLine();
+	}
+
+private:
+	char* arr = new char[10];
+};
+
+class Table {
+public:
+	Table(Line* l) {
+		for (int i = 0; i < 10; i++) {
+			arr[i] = l[i];
+		}
+	}
+	void addShip(int len)// Добавление корабля рнд
+	{
+		int ship = 1, xl, yu, xr, yd;
+		bool d = 1, u = 1, l = 1, r = 1;
+		do {
+			y = rand() % 10;
+			x = rand() % 10;
+		} while (check( y, x));
+		xl = x;
+		xr = x;
+		yu = y;
+		yd = y;
+		vector<pair<int, int>> filled = { {y, x} };
+		while (ship++ < len) {
+			vector<pair<int, int>> possible;
+			if (l && xl - 1 >= 0 && !check( y, xl - 1)) {
+				possible.push_back({ y, xl - 1 });// Лево
+			}
+			if (r && xr + 1 < 10 && !check(y, xr + 1)) {
+				possible.push_back({ y, xr + 1 });// Право
+			}
+			if (u && yu - 1 >= 0 && !check(yu - 1, x)) {
+				possible.push_back({ yu - 1, x });// Вверх
+			}
+			if (d && yd + 1 < 10 && !check(yd + 1, x)) {
+				possible.push_back({ yd + 1, x });// Вниз
+			}
+			if (possible.size() == 0)
+				return addShip(len);
+			int rnd = rand() % possible.size();// Рандом
+			int yn = possible[rnd].first, xn = possible[rnd].second;
+			if (yn == y) {
+				u = 0;
+				d = 0;
+				if (xn == xl - 1)
+					xl--;
+				else
+					xr++;
+			}
+			else {
+				l = 0;
+				r = 0;
+				if (yn == yu - 1)
+					yu--;
+				else
+					yd++;
+			}
+			filled.push_back({ yn, xn });
+		}
+		if (filled.size() == len) {
+			for (auto i : filled) {
+				int a = i.first, b = i.second;
+				arr[a][b] = 'k';
+			}
+		}
+		else
+			addShip(len);
+	}
+	void fillShips()// Заполнение кораблей
+	{
+		for (int i = 1; i < 5; i++) {
+			for (int j = 0; j < 5 - i; j++) {
+				addShip(i);
+			}
+		}
+	}
+	Table() {
+		fillShips();
+	}
+	Table(bool op) {
+		return;
+	}
+	Line operator[](int ind) { // обращение к линии по индексу
+		return arr[ind];
+	}
+	~Table() {
+		delete[] arr;
+	}
+	void print()// Вывод таблицы
+	{
+		cout << "  ";
+		for (int i = 1; i < 11; i++)
+			cout << i << " ";
 		cout << endl;
-
-	}
-	cout << "\n\n";
-}
-
-bool check(char** table, int y, int x)// Проверка сущуствования кораблей в радиусе 1 клетки
-{
-	for (int i = max(x - 1, 0); i <= min(x + 1, 9); i++) {
-		for (int j = max(y - 1, 0); j <= min(y + 1, 9); j++) {
-			if (table[j][i] == 'k')
-				return 1;
-		}
-	}
-	return 0;
-}
-
-void addShip(char** table, int len)// Добавление корабля рнд
-{
-	int rnd, ship = 1, xl, yu, xr, yd;
-	bool d = 1, u = 1, l = 1, r = 1;
-	do {
-		y = rand() % 10;
-		x = rand() % 10;
-	} while (check(table, y, x));
-	xl = x;
-	xr = x;
-	yu = y;
-	yd = y;
-	vector<pair<int, int>> filled = { {y, x} };
-	while (ship++ < len) {
-		vector<pair<int, int>> possible;
-		if (l && xl - 1 >= 0 && !check(table, y, xl - 1)) {
-			possible.push_back({ y, xl - 1 });// Лево
-		}
-		if (r && xr + 1 < 10 && !check(table, y, xr + 1)) {
-			possible.push_back({ y, xr + 1 });// Право
-		}
-		if (u && yu - 1 >= 0 && !check(table, yu - 1, x)) {
-			possible.push_back({ yu - 1, x });// Вверх
-		}
-		if (d && yd + 1 < 10 && !check(table, yd + 1, x)) {
-			possible.push_back({ yd + 1, x });// Вниз
-		}
-		if (possible.size() == 0)
-			return addShip(table, len);
-		int rnd = rand() % possible.size();// Рандом
-		int yn = possible[rnd].first, xn = possible[rnd].second;
-		if (yn == y) {
-			u = 0;
-			d = 0;
-			if (xn == xl - 1)
-				xl--;
-			else
-				xr++;
-		}
-		else {
-			l = 0;
-			r = 0;
-			if (yn == yu - 1)
-				yu--;
-			else
-				yd++;
-		}
-		filled.push_back({ yn, xn });
-	}
-	if (filled.size() == len) {
-		for (auto i : filled) {
-			int a = i.first, b = i.second;
-			table[a][b] = 'k';
-		}
-	}
-	else
-		addShip(table, len);
-}
-
-void fillShips(char** table)// Заполнение кораблей
-{
-	for (int i = 1; i < 5; i++) {
-		for (int j = 0; j < 5 - i; j++) {
-			addShip(table, i);
-		}
-	}
-}
-
-void destroyShip(char** table, int yu1 = yu, int yd1 = yd, int xl1 = xl, int xr1 = xr)// Уничтожение корабля
-{
-	for (int yn = max(yu1 - 1, 0); yn <= min(yd1 + 1, 9); yn++)
-	{
-		for (int xn = max(xl1 - 1, 0); xn <= min(xr1 + 1, 9); xn++)
+		string s = "abcdefghij";
+		for (int i = 0; i < 10; i++)
 		{
-			table[yn][xn] = (table[yn][xn] == 'x') ? 'x' : 'o';
+			cout << s[i] << " ";
+			for (int a = 0; a < 10; a++)
+			{
+				cout << arr[i][a] << ' ';
+			}
+			cout << endl;
+
+		}
+		cout << "\n\n";
+	}
+	void destroyShip(int yu1 = yu, int yd1 = yd, int xl1 = xl, int xr1 = xr)// Уничтожение корабля
+	{
+		for (int yn = max(yu1 - 1, 0); yn <= min(yd1 + 1, 9); yn++)
+		{
+			for (int xn = max(xl1 - 1, 0); xn <= min(xr1 + 1, 9); xn++)
+			{
+				arr[yn][xn] = (arr[yn][xn] == 'x') ? 'x' : 'o';
+			}
 		}
 	}
-}
-
-void preparing_field()// Заполнение полей
-{
-	filling(tableplshoot);
-	filling(tablebotship);
-	filling(tablebotshoot);
-	filling(tableplship);
-	fillShips(tableplship);
-	fillShips(tablebotship);
-	// addShip(tableplship, 4);
-	print(tableplship);
-}
-
-void del()// Удаление полей
-{
-	for (int i = 0; i < 10; i++)
+	bool isShipExist()// Проверка наличия корабля
 	{
-		delete[] tableplship[i];
-		delete[] tableplshoot[i];
-		delete[] tablebotship[i];
-		delete[] tablebotshoot[i];
+		if ((xl > 0 && arr[y][xl - 1] == 'k') ||
+			(xr < 10 && arr[y][xr + 1] == 'k') ||
+			(yu > 0 && arr[yu - 1][x] == 'k') ||
+			(yd < 10 && arr[yd + 1][x] == 'k'))
+			return 1;
+		return 0;
 	}
-	delete[] tableplship;
-	delete[] tableplshoot;
-	delete[] tablebotship;
-	delete[] tablebotshoot;
-}
 
-bool isShipExist(char** table)// Проверка наличия корабля
-{
-	if ((xl > 0 && table[y][xl - 1] == 'k') ||
-		(xr < 10 && table[y][xr + 1] == 'k') ||
-		(yu > 0 && table[yu - 1][x] == 'k') ||
-		(yd < 10 && table[yd + 1][x] == 'k'))
-		return 1;
-	return 0;
-}
+private:
+	Line* arr = new Line[10];
+	bool check(int y, int x)// Проверка сущуствования кораблей в радиусе 1 клетки
+	{
+		for (int i = max(x - 1, 0); i <= min(x + 1, 9); i++) {
+			for (int j = max(y - 1, 0); j <= min(y + 1, 9); j++) {
+				if (arr[j][i] == 'k')
+					return 1;
+			}
+		}
+		return 0;
+	}
+};
 
-void aiIfShot(char** tableBot, char** tablePl)// Ход ИИ, если тот попал
+
+void aiIfShot(Table tableBot, Table tablePl)// Ход ИИ, если тот попал
 {
 	if ((l || r || d || u) == 0) {
 		l = 1;
@@ -214,9 +217,9 @@ void aiIfShot(char** tableBot, char** tablePl)// Ход ИИ, если тот п
 		}
 		tablePl[yn][xn] = 'x';
 		tableBot[yn][xn] = 'x';
-		if (!isShipExist(tablePl)) {
-			destroyShip(tableBot);
-			destroyShip(tablePl);
+		if (!tablePl.isShipExist()) {
+			tableBot.destroyShip();
+			tablePl.destroyShip();
 			shot = 0;
 			l = 0;
 			r = 0;
@@ -238,7 +241,7 @@ void aiIfShot(char** tableBot, char** tablePl)// Ход ИИ, если тот п
 	}
 }
 
-void aiRnd(char** tableBot, char** tablePl)// рнд ход бота
+void aiRnd(Table tableBot, Table tablePl)// рнд ход бота
 {
 	vector<pair<int, int>> free;
 	for (int i = 0; i < 10; i++) {
@@ -265,7 +268,7 @@ void aiHub()// Ход ИИ
 		aiRnd(tablebotshoot, tableplship);
 }
 
-bool win(char** tablepl1ship, char** tablepl2ship)// Проверка победы
+bool win(Table tablepl1ship, Table tablepl2ship)// Проверка победы
 {
 	bool pl1 = 1, pl2 = 1;
 	for (int i = 0; i < 10; i++) {
@@ -322,13 +325,13 @@ pair <int, int> enter()// Ввод координат
 	return { y, x };
 }
 
-void movePl(char** tablePlSi, char** tablePlSo, char** tableOppSi, int num)// Ход игрока, принимает корабли соперника и свои + свое поле стрельбы для num-го игрока
+void movePl(Table tablePlSi, Table tablePlSo, Table tableOppSi, int num)// Ход игрока, принимает корабли соперника и свои + свое поле стрельбы для num-го игрока
 {
 	cout << "ход игрок а №" << num << "\n";
 	cout << "ваши корабли\n";
-	print(tablePlSi);
+	tablePlSi.print();
 	cout << "Поле стрельбы\n";
-	print(tablePlSo);
+	tablePlSo.print();
 	int y, x;
 	pair <int, int> p = enter();
 	y = p.first;
@@ -384,8 +387,8 @@ void movePl(char** tablePlSi, char** tablePlSo, char** tableOppSi, int num)// Х
 
 			cout << "корабль уничтожен\n";
 			printf("%d %d %d %d\n", xl, xr, yu, yd);
-			destroyShip(tableOppSi, yu, yd, xl, xr);
-			destroyShip(tablePlSo, yu, yd, xl, xr);
+			tableOppSi.destroyShip(yu, yd, xl, xr);
+			tablePlSo.destroyShip(yu, yd, xl, xr);
 		}
 		movePl(tablePlSi, tablePlSo, tableOppSi, num);
 	}
@@ -411,14 +414,5 @@ void beforeMoves()// Переход хода
 }
 
 int main() {
-	setlocale(LC_ALL, "Russian");
-	srand(time(NULL));
-	preparing_field();// Инициализация полей
-	for (int i = 0; i < 1000000000; i++) {
-		beforeMoves();
-		pair <int, int> p = enter();
-		int y = p.first, x = p.second;
-		cout << y << " " << x << endl;
-	}
-	del();
+
 }
