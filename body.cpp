@@ -1,11 +1,6 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-
-Table tableplship;
-Table tableplshoot(false);
-Table tablebotship;
-Table tablebotshoot(false);
 bool shot = 0, l = 0, r = 0, u = 0, d = 0;
 int xl, xr, yu, yd;
 int x, y;
@@ -170,8 +165,12 @@ private:
 		}
 		return 0;
 	}
-};
+};\
 
+Table tableplship;
+Table tableplshoot(false);
+Table tablebotship;
+Table tablebotshoot(false);
 
 void aiIfShot(Table tableBot, Table tablePl)// Ход ИИ, если тот попал
 {
@@ -414,5 +413,5 @@ void beforeMoves()// Переход хода
 }
 
 int main() {
-
+	tablebotshoot.print();
 }
