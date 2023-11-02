@@ -1,7 +1,6 @@
-#include "game.hpp";
+#include "Game.hpp"
 
 int main() {
-  srand(time(NULL));
-  preparing_field();
-  del();
+    setlocale(LC_ALL, "Russian");
+    game(2);
 }
