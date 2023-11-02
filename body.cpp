@@ -525,5 +525,12 @@ void game(int num)
 
 int main() {
     setlocale(LC_ALL, "Russian");
-    game(2);
+    cout << "1-PvP\n2-Bot\n";
+    int choose;
+    cin >> choose;
+    while (choose < 1 || choose > 2) {
+        cout << "ДЕБИЛ, ОТ 1 ДО 2 ВВОД\n";
+        cin >> choose;
+    }
+    game(choose);
 }
