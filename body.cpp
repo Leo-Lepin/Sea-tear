@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <vector>
 #include <windows.h>
@@ -229,10 +230,8 @@ Table tablebotship;
 Table tablebotshoot(false);
 
 
-
 void aiIfShot(Table& tableBot, Table& tablePl)// Ход ИИ, если тот попал
 {
-    cout << "S\n";
     if ((l || r || d || u) == 0) {
         l = 1;
         r = 1;
@@ -513,6 +512,8 @@ void game(int num)
                 break;
             }
             aiHub();
+            while (shot)
+                aiHub();
             if (tableplship.win())
             {
                 cout << "Победа второго игрока\n";
